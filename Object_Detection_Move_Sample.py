@@ -3,11 +3,8 @@ import cv2
 import numpy as np  
 
 def main():
-
     cap = cv2.VideoCapture(0)
-
-    back_sub = cv2.createBackgroundSubtractorMOG2(history=700,
-                                                  varThreshold=25, detectShadows=True)
+    back_sub = cv2.createBackgroundSubtractorMOG2(history=700,varThreshold=25, detectShadows=True)
     kernel = np.ones((20, 20), np.uint8)
     while (True):
         ret, frame = cap.read()
@@ -18,12 +15,10 @@ def main():
         fg_mask = cv2.medianBlur(fg_mask, 5)
         # Threshold the image to make it either black or white
         _, fg_mask = cv2.threshold(fg_mask, 127, 255, cv2.THRESH_BINARY)
-
         # Find the index of the largest contour and draw bounding box
         fg_mask_bb = fg_mask
         contours, hierarchy = cv2.findContours(fg_mask_bb, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2:]
         areas = [cv2.contourArea(c) for c in contours]
-
         # If there are no countours
         if len(areas) < 1:
             # Display the resulting frame
@@ -34,11 +29,9 @@ def main():
                 break
             # Go to the top of the while loop
             continue
-
         else:
             # Find the largest moving object in the image
             max_index = np.argmax(areas)
-
         # Draw the bounding box
         cnt = contours[max_index]
         x, y, w, h = cv2.boundingRect(cnt)
@@ -50,8 +43,7 @@ def main():
         # Print the centroid coordinates (we'll use the center of the
         # bounding box) on the image
         text = "x: " + str(x2) + ", y: " + str(y2)
-        cv2.putText(frame, text, (x2 - 10, y2 - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        cv2.putText(frame, text, (x2 - 10, y2 - 10),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         # Display the resulting frame
         cv2.imshow('view', frame)
         # If "q" is pressed on the keyboard, 
